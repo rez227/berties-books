@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Add book to <%=shopName%>
+  </title>
+  <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+
+<body>
+  <h1>
+    <%=shopName%>: Add Outfit
+  </h1>
+  <form method="POST" action="/Outfitadded">
+    <p>Occasion: <input id="occasion" type="text" name="occasion" value="" /></p>
+    <p>Colour: <input id="colour" type="text" name="colour" value="" /></p>
+    <p>Budget: <input id="budget" type="text" name="budget" value="" /></p>
+
+    <input type="submit" value="Add Outfit" />
+  </form>
+</body>
+
+</html>

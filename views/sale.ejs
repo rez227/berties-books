@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Welcome to <%=shopName%>
+  </title>
+  <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+
+<body>
+  <h1>
+    <%=shopName%> Shop
+  </h1>
+  <h2>Here are our bargain categories:</h2>
+  <ul>
+    <% availablecategories.forEach(function(categories) { %>
+      <li>
+        <%= categories.occasion %>,<%= categories.colour %>, £<%=categories.budget%>
+      </li>
+      <% }) %>
+  </ul>
+</body>
+
+</html>
