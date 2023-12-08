@@ -29,9 +29,41 @@ module.exports = function (app, shopData) {
         res.render('register.ejs', shopData);
 
     });
+
     app.post('/registered', function (req, res) {
-        // saving data in database
-        res.send(' Hello ' + req.body.first + ' ' + req.body.last + ' you are now registered!  We will send an email to you at ' + req.body.email);
+        // Checks if the username already exists
+        let existingUserQuery = "SELECT * FROM userdetails WHERE username = ?";
+        db.query(existingUserQuery, [req.body.username], (err, result) => {
+            if (err) {
+                return res.status(500).send('Internal Server Error');
+            }
+
+            if (result.length > 0) {
+                return res.send('This username has been taken. Please choose another username.');
+            }
+
+            // If the username is unique, continue with the insertion
+            const bcrypt = require('bcrypt');
+            const saltRounds = 10;
+            const plainPassword = req.body.password;
+
+            bcrypt.hash(plainPassword, saltRounds, function (err, hashedPassword) {
+                // Store hashed password in your database.
+                let sqlquery = "INSERT INTO userdetails (username, first_name, last_name, email, hashedPassword) VALUES (?,?,?,?,?)";
+                // execute sql query
+                let newrecord = [req.body.username, req.body.first, req.body.last, req.body.email, hashedPassword];
+
+                db.query(sqlquery, newrecord, (err, result) => {
+                    if (err) {
+                        return console.error(err.message);
+                    } else {
+                        result = 'Hello ' + req.body.first + ' ' + req.body.last + ' you are now registered!  We will send an email to you at ' + req.body.email;
+                        //result += 'Your password is: ' + req.body.password + ' and your hashed password is: ' + hashedPassword;
+                        res.send(result);
+                    }
+                });
+            });
+        });
     });
     app.get('/list', function (req, res) {
         let sqlquery = "SELECT * FROM categories"; // query database to get all the categories
