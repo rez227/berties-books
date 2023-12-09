@@ -73,8 +73,20 @@ module.exports = function (app, shopData) {
                 res.redirect('./');
             }
             let newData = Object.assign({}, shopData, { availablecategories: result });
-            console.log(newData)
+            console.log(newData);
             res.render("list.ejs", newData)
+        });
+    });
+    //a new route for list users
+    app.get('/listusers', function (req, res) {
+        let sqlquery = "SELECT username, first_name, last_name, email FROM userdetails"; // Query database to get user details
+        db.query(sqlquery, (err, result) => {
+            if (err) {
+                res.redirect('./');
+            }
+            let newData = Object.assign({}, shopData, { userList: result });
+            console.log(newData);
+            res.render("listusers.ejs", newData);
         });
     });
 
