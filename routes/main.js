@@ -94,38 +94,41 @@ module.exports = function (app, shopData) {
         res.render('login.ejs', shopData);
     });
     //After logging in outcome
-    app.post('/loggedin', function (req, res) {
-        const username = req.body.username;
-        const password = req.body.password;
+    // app.post('/loggedin', function (req, res) {
+    //     const username = req.body.username;
+    //     const password = req.body.password;
 
-        // Query database to get user details
-        let sqlquery = "SELECT * FROM userdetails WHERE username = ?";
-        db.query(sqlquery, [username], (err, result) => {
+    app.post('/loggedin', function (req, res) {
+        // Compare the form data with the data stored in the database
+        let sqlquery = "SELECT hashedPassword FROM userdetails WHERE username = ?"; // query database to get the hashed password for the user
+        // execute sql query
+        let username = (req.body.username);
+        db.query(sqlquery, username, (err, result) => {
             if (err) {
                 return console.error(err.message);
             }
-
-            if (result.length > 0) {
-                // User found, compare hashed passwords
-                const hashedPassword = result[0].hashedPassword;
-
+            else if (result.length == 0) {
+                // No user found with that username
+                res.send('Invalid username or password');
+            }
+            else {
+                // User found, compare the passwords
+                let hashedPassword = result[0].hashedPassword;
                 const bcrypt = require('bcrypt');
-                bcrypt.compare(req.body.password, hashedPassword, function (err, result) {
+                bcrypt.compare((req.body.password), hashedPassword, function (err, result) {
                     if (err) {
+                        // Handle error
                         return console.error(err.message);
                     }
-
                     else if (result == true) {
-                        // Login successful
-                        res.send('Login successful! Welcome, ' + username);
-                    } else {
-                        // Incorrect password
-                        res.send('Login failed. Incorrect username or password.');
+                        // The passwords match, login successful
+                        res.send('Welcome, ' + (req.body.username) + '!' + '<a href=' + './' + '>Home</a>');
+                    }
+                    else {
+                        //  login failed
+                        res.send('Invalid username or password');
                     }
                 });
-            } else {
-                // User not found
-                res.send('Login failed. Incorrect username or password.');
             }
         });
     });
@@ -159,5 +162,4 @@ module.exports = function (app, shopData) {
             res.render("sale.ejs", newData)
         });
     });
-
-}
+};

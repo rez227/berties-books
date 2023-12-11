@@ -1,22 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Register for <%=shopName%>
+    </title>
+    <link rel="stylesheet" type="text/css" href="main.css" />
 </head>
 
 <body>
-    <h1>Login</h1>
-    <form action="/loggedin" method="post"> <!-- Updated action to /loggedin and method to post -->
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br>
-
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br>
-
-        <button type="submit">Login</button>
+    <h1>Register for <%=shopName%>
+    </h1>
+    <form method="POST" action="/loggedin">
+        <p>username: <input id="username" type="username" name="username" value="username" /></p>
+        <p>password: <input id="password" type="password" name="password" value="password" /></p>
+        <input type="submit" value="Login" />
     </form>
 </body>
 
