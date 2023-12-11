@@ -89,6 +89,46 @@ module.exports = function (app, shopData) {
             res.render("listusers.ejs", newData);
         });
     });
+    //Log in system
+    app.get('/login', function (req, res) {
+        res.render('login.ejs', shopData);
+    });
+    //After logging in outcome
+    app.post('/loggedin', function (req, res) {
+        const username = req.body.username;
+        const password = req.body.password;
+
+        // Query database to get user details
+        let sqlquery = "SELECT * FROM userdetails WHERE username = ?";
+        db.query(sqlquery, [username], (err, result) => {
+            if (err) {
+                return console.error(err.message);
+            }
+
+            if (result.length > 0) {
+                // User found, compare hashed passwords
+                const hashedPassword = result[0].hashedPassword;
+
+                const bcrypt = require('bcrypt');
+                bcrypt.compare(req.body.password, hashedPassword, function (err, result) {
+                    if (err) {
+                        return console.error(err.message);
+                    }
+
+                    else if (result == true) {
+                        // Login successful
+                        res.send('Login successful! Welcome, ' + username);
+                    } else {
+                        // Incorrect password
+                        res.send('Login failed. Incorrect username or password.');
+                    }
+                });
+            } else {
+                // User not found
+                res.send('Login failed. Incorrect username or password.');
+            }
+        });
+    });
 
     app.get('/addOutfit', function (req, res) {
         res.render('addOutfit.ejs', shopData);
