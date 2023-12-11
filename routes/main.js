@@ -1,4 +1,5 @@
 module.exports = function (app, shopData) {
+    const { check, validationResult } = require('express-validator');
     const redirectLogin = (req, res, next) => {
         if (!req.session.userId) {
             res.redirect('./login')
@@ -35,41 +36,49 @@ module.exports = function (app, shopData) {
 
     });
 
-    app.post('/registered', function (req, res) {
-        // Checks if the username already exists
-        let existingUserQuery = "SELECT * FROM userdetails WHERE username = ?";
-        db.query(existingUserQuery, [req.body.username], (err, result) => {
-            if (err) {
-                return res.status(500).send('Internal Server Error');
+    app.post('/registered', [check('email').isEmail()], check('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long'),
+        function (req, res) {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                res.redirect('./register');
             }
-
-            if (result.length > 0) {
-                return res.send('This username has been taken. Please choose another username.');
-            }
-
-            // If the username is unique, continue with the insertion
-            const bcrypt = require('bcrypt');
-            const saltRounds = 10;
-            const plainPassword = req.body.password;
-
-            bcrypt.hash(plainPassword, saltRounds, function (err, hashedPassword) {
-                // Store hashed password in your database.
-                let sqlquery = "INSERT INTO userdetails (username, first_name, last_name, email, hashedPassword) VALUES (?,?,?,?,?)";
-                // execute sql query
-                let newrecord = [req.body.username, req.body.first, req.body.last, req.body.email, hashedPassword];
-
-                db.query(sqlquery, newrecord, (err, result) => {
+            else {
+                // Checks if the username already exists
+                let existingUserQuery = "SELECT * FROM userdetails WHERE username = ?";
+                db.query(existingUserQuery, [req.sanitize(req.body.username)], (err, result) => {
                     if (err) {
-                        return console.error(err.message);
-                    } else {
-                        result = 'Hello ' + req.body.first + ' ' + req.body.last + ' you are now registered!  We will send an email to you at ' + req.body.email;
-                        //result += 'Your password is: ' + req.body.password + ' and your hashed password is: ' + hashedPassword;
-                        res.send(result);
+                        return res.status(500).send('Internal Server Error');
                     }
+
+                    if (result.length > 0) {
+                        return res.send('This username has been taken. Please choose another username.');
+                    }
+
+                    // If the username is unique, continue with the insertion
+                    const bcrypt = require('bcrypt');
+                    const saltRounds = 10;
+                    const plainPassword = req.sanitize(req.body.password);
+
+                    bcrypt.hash(plainPassword, saltRounds, function (err, hashedPassword) {
+                        // Store hashed password in your database.
+                        let sqlquery = "INSERT INTO userdetails (username, first_name, last_name, email, hashedPassword) VALUES (?,?,?,?,?)";
+                        // execute sql query
+                        let newrecord = [req.sanitize(req.body.username), req.sanitize(req.body.first), req.sanitize(req.body.last), req.sanitize(req.body.email), hashedPassword];
+
+                        db.query(sqlquery, newrecord, (err, result) => {
+                            if (err) {
+                                return console.error(err.message);
+                            } else {
+                                result = 'Hello ' + req.sanitize(req.sanitize(req.body.first)) + ' ' + req.sanitize(req.body.last) + ' you are now registered!  We will send an email to you at ' + req.body.email;
+                                //result += 'Your password is: ' + req.body.password + ' and your hashed password is: ' + hashedPassword;
+                                res.send(result);
+
+                            }
+                        });
+                    });
                 });
-            });
+            }
         });
-    });
     app.get('/list', redirectLogin, function (req, res) {
         let sqlquery = "SELECT * FROM categories"; // query database to get all the categories
         // execute sql query
@@ -104,7 +113,7 @@ module.exports = function (app, shopData) {
         // Compare the form data with the data stored in the database
         let sqlquery = "SELECT hashedPassword FROM userdetails WHERE username = ?"; // query database to get the hashed password for the user
         // execute sql query
-        let username = (req.body.username);
+        let username = (req.sanitize(req.body.username));
         db.query(sqlquery, username, (err, result) => {
             if (err) {
                 return console.error(err.message);
@@ -117,17 +126,16 @@ module.exports = function (app, shopData) {
                 // User found, compare the passwords
                 let hashedPassword = result[0].hashedPassword;
                 const bcrypt = require('bcrypt');
-                bcrypt.compare((req.body.password), hashedPassword, function (err, result) {
+                bcrypt.compare((req.sanitize(req.body.password)), hashedPassword, function (err, result) {
                     if (err) {
                         // Handle error
                         return console.error(err.message);
                     }
                     else if (result == true) {
                         // Save user session here, when login is successful
-                        req.session.userId = req.body.username;
+                        req.session.userId = req.sanitize(req.body.username);
                         // The passwords match, login successful
                         res.send('Welcome, ' + (req.body.username) + '!' + '<a href=' + './' + '>Home</a>');
-
 
                     }
                     else {
@@ -144,7 +152,7 @@ module.exports = function (app, shopData) {
             if (err) {
                 return res.redirect('./')
             }
-            res.send('you are now logged out. <a href=' + './' + '>Index</a>');
+            res.send('you are now logged out. <a href=' + './' + '>Home</a>');
         })
     })
 
@@ -157,13 +165,13 @@ module.exports = function (app, shopData) {
         // saving data in database
         let sqlquery = "INSERT INTO categories (occasion, colour, budget) VALUES (?,?,?)";
         // execute sql query
-        let newrecord = [req.body.occasion, req.body.colour, req.body.budget];
+        let newrecord = [req.sanitize(req.body.occasion), req.sanitize(req.body.colour), req.sanitize(req.body.budget)];
         db.query(sqlquery, newrecord, (err, result) => {
             if (err) {
                 return console.error(err.message);
             }
             else
-                res.send(' This book is added to database, occasion: ' + req.body.occasion + ' budget ' + req.body.budget);
+                res.send(' This book is added to database, occasion: ' + req.sanitize(req.body.occasion) + ' budget ' + req.sanitize(req.body.budget));
         });
     });
 
