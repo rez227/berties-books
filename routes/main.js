@@ -1,4 +1,9 @@
 module.exports = function (app, shopData) {
+    const redirectLogin = (req, res, next) => {
+        if (!req.session.userId) {
+            res.redirect('./login')
+        } else { next(); }
+    }
 
     // Handle our routes
     app.get('/', function (req, res) {
@@ -65,7 +70,7 @@ module.exports = function (app, shopData) {
             });
         });
     });
-    app.get('/list', function (req, res) {
+    app.get('/list', redirectLogin, function (req, res) {
         let sqlquery = "SELECT * FROM categories"; // query database to get all the categories
         // execute sql query
         db.query(sqlquery, (err, result) => {
@@ -90,13 +95,10 @@ module.exports = function (app, shopData) {
         });
     });
     //Log in system
+
     app.get('/login', function (req, res) {
         res.render('login.ejs', shopData);
     });
-    //After logging in outcome
-    // app.post('/loggedin', function (req, res) {
-    //     const username = req.body.username;
-    //     const password = req.body.password;
 
     app.post('/loggedin', function (req, res) {
         // Compare the form data with the data stored in the database
@@ -121,8 +123,12 @@ module.exports = function (app, shopData) {
                         return console.error(err.message);
                     }
                     else if (result == true) {
+                        // Save user session here, when login is successful
+                        req.session.userId = req.body.username;
                         // The passwords match, login successful
                         res.send('Welcome, ' + (req.body.username) + '!' + '<a href=' + './' + '>Home</a>');
+
+
                     }
                     else {
                         //  login failed
@@ -132,6 +138,16 @@ module.exports = function (app, shopData) {
             }
         });
     });
+    //Logout
+    app.get('/logout', redirectLogin, (req, res) => {
+        req.session.destroy(err => {
+            if (err) {
+                return res.redirect('./')
+            }
+            res.send('you are now logged out. <a href=' + './' + '>Index</a>');
+        })
+    })
+
 
     app.get('/addOutfit', function (req, res) {
         res.render('addOutfit.ejs', shopData);
@@ -162,4 +178,4 @@ module.exports = function (app, shopData) {
             res.render("sale.ejs", newData)
         });
     });
-};
+}
