@@ -69,7 +69,7 @@ module.exports = function (app, shopData) {
                             if (err) {
                                 return console.error(err.message);
                             } else {
-                                result = 'Hello ' + req.sanitize(req.sanitize(req.body.first)) + ' ' + req.sanitize(req.body.last) + ' you are now registered!  We will send an email to you at ' + req.body.email;
+                                result = 'Hello ' + req.sanitize(req.body.first) + ' ' + req.sanitize(req.body.last) + ' you are now registered!  We will send an email to you at ' + req.body.email;
                                 //result += 'Your password is: ' + req.body.password + ' and your hashed password is: ' + hashedPassword;
                                 res.send(result);
 
@@ -101,6 +101,32 @@ module.exports = function (app, shopData) {
             let newData = Object.assign({}, shopData, { userList: result });
             console.log(newData);
             res.render("listusers.ejs", newData);
+        });
+    });
+    //delete user
+    app.get('/eliminateuser', redirectLogin, function (req, res) {
+        res.render('eliminateuser.ejs', shopData);
+    });
+    app.post('/usereliminated', redirectLogin, function (req, res) {
+        const usernameToEliminate = req.sanitize(req.body.username);
+
+        // Perform the deletion in the database
+        const deleteQuery = "DELETE FROM userdetails WHERE username = ?";
+        db.query(deleteQuery, [usernameToEliminate], (err, result) => {
+            if (err) {
+                console.log('Error eliminating user:', err);
+                res.status(500).send('Internal Server Error');
+            } else {
+                console.log('Result:', result);
+
+                if (result.affectedRows > 0) {
+                    console.log('User eliminated successfully');
+                    res.send('The user has successfully been eliminated. <a href=' + './' + '>Home</a>');
+                } else {
+                    console.log('User not found');
+                    res.send('We were not able to locate this user. Please try again later <a href=' + './' + '>Home</a>');
+                }
+            }
         });
     });
     //Log in system
@@ -187,3 +213,4 @@ module.exports = function (app, shopData) {
         });
     });
 }
+//make sure to add validation where you cannot put Integers where it says first name and last name
