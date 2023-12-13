@@ -17,20 +17,26 @@ module.exports = function (app, shopData) {
         res.render("search.ejs", shopData);
     });
     app.get('/search-result', function (req, res) {
-        //searching in the database
-        //res.send("You searched for: " + req.query.keyword);
+        const keyword = '%' + req.query.keyword + '%';
 
-        let sqlquery = "SELECT * FROM categories WHERE occasion LIKE '%" + req.query.keyword + "%'"; // query database to get all the categories
-        // execute sql query
-        db.query(sqlquery, (err, result) => {
+        // Perform the search in "categories" table
+        const query = `
+            SELECT 'categories' AS category, occasion, colour, budget FROM categories 
+            WHERE occasion LIKE ? OR colour LIKE ? OR budget LIKE ?`;
+
+        db.query(query, [keyword, keyword, keyword], (err, results) => {
             if (err) {
-                res.redirect('./');
+                console.error('Error executing the search query:', err);
+                res.status(500).send('Internal Server Error');
+                return;
             }
-            let newData = Object.assign({}, shopData, { availablecategories: result });
-            console.log(newData)
-            res.render("list.ejs", newData)
+
+            let newData = Object.assign({}, shopData, { results: results });
+            // Process the search results
+            res.render('result.ejs', newData);
         });
     });
+
     app.get('/register', function (req, res) {
         res.render('register.ejs', shopData);
 
@@ -244,5 +250,5 @@ module.exports = function (app, shopData) {
 
         apiReq.end();
     });
-    //make sure to add validation where you cannot put Integers where it says first name and last name
 }
+//make sure to add validation where you cannot put Integers where it says first name and last name
