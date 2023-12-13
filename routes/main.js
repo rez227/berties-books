@@ -212,5 +212,37 @@ module.exports = function (app, shopData) {
             res.render("sale.ejs", newData)
         });
     });
+    // This is an API
+    const http = require('https');
+    app.get('/checkPrice', function (req, res) {
+        const options = {
+            method: 'GET',
+            hostname: 'exchange-rate-api1.p.rapidapi.com',
+            port: null,
+            path: '/convert?base=USD&target=GBP',
+            headers: {
+                'X-RapidAPI-Key': '9eedca4fd5msh5af26b25ea04c8cp125324jsne858df1f6b2e',
+                'X-RapidAPI-Host': 'exchange-rate-api1.p.rapidapi.com'
+            }
+        };
+
+        const apiReq = http.request(options, function (apiRes) {
+            const chunks = [];
+
+            apiRes.on('data', function (chunk) {
+                chunks.push(chunk);
+            });
+
+            apiRes.on('end', function () {
+                const body = Buffer.concat(chunks);
+                const result = JSON.parse(body.toString());
+
+                // Render the EJS template with the exchange rate information
+                res.render('checkPrice', { result });
+            });
+        });
+
+        apiReq.end();
+    });
+    //make sure to add validation where you cannot put Integers where it says first name and last name
 }
-//make sure to add validation where you cannot put Integers where it says first name and last name

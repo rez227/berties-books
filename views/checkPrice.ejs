@@ -1,0 +1,21 @@
+<html>
+
+<head>
+    <title>Exchange Rate Information</title>
+</head>
+
+<body>
+    <h1>Exchange Rate Information</h1>
+    <p>Base currency: <%= result.convert_result.base %>
+    </p>
+    <p>Target currency: <%= result.convert_result.target %>
+    </p>
+    <p>Exchange rate: <%= result.convert_result.rate %>
+    </p>
+    <p>Last update time: <%= result.time_update.time_utc %>
+    </p>
+</body>
+
+</html>
+
+<!-- This is a price convesion for those who are buying from america in ENGLAND so you are able to convert the price accordingly and to check if you are getting a good deal -->
