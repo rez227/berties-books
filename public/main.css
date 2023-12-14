@@ -3,6 +3,7 @@
   padding: 0;
 }
 
+/* this is the background image, black t shirts in hangers */
 .header {
   min-height: 100vh;
   width: 100%;
@@ -20,6 +21,7 @@ nav {
   align-items: center;
 }
 
+/* this is the logo button where it takes u to home */
 nav img {
   width: 150px;
 }
@@ -29,9 +31,68 @@ nav img {
   text-align: right;
 }
 
+/* all the BUTTONS */
 .nav-links ul p {
   list-style: none;
   display: inline-block;
   padding: 8px 12px;
   position: relative;
+}
+
+.nav-links ul p a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.nav-links ul p::after {
+  content: '';
+  width: 0%;
+  height: 2px;
+  background: #36f48b;
+  display: block;
+  margin: auto;
+  transition: 0.5s;
+}
+
+.nav-links ul p:hover:after {
+  width: 100%;
+}
+
+.text-box {
+  width: 90%;
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.text-box h1 {
+  font-size: 62px;
+}
+
+.text-box p {
+  margin: 10px 0 40px;
+  font-size: 14px;
+  color: white;
+}
+
+.visit-button {
+  display: inline-block;
+  text-decoration: none;
+  color: white;
+  border: 1px solid white;
+  padding: 12px 34px;
+  font-size: 13px;
+  background: transparent;
+  position: relative;
+  cursor: pointer;
+}
+
+.visit-button:hover {
+  border: 1px solid #042d16;
+  background: #36f48b;
+  transition: 1s;
 }

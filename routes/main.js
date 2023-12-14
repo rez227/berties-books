@@ -37,6 +37,45 @@ module.exports = function (app, shopData) {
         });
     });
 
+    //weather API
+
+    const request = require('request');
+
+    app.get('/weather', function (req, res) {
+        res.render('weather');
+    });
+
+    app.post('/weather', function (req, res) {
+        let apiKey = '3d6f48214e9fccaf110e17b76a5bf280';
+        let city = req.body.city;
+        let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+        request(url, function (err, response, body) {
+            if (err) {
+                console.log('Error:', err);
+                res.send('Error fetching weather data.');
+            } else {
+                try {
+                    var weather = JSON.parse(body);
+
+                    if (weather && weather.main) {
+                        var wmsg = 'It is ' + weather.main.temp +
+                            ' degrees in ' + weather.name +
+                            '! <br> The humidity now is: ' +
+                            weather.main.humidity +
+                            '! <br> Wind speed: ' + (weather.wind ? weather.wind.speed : 'N/A') +
+                            ', Direction: ' + (weather.wind ? weather.wind.deg : 'N/A');
+                        res.send(wmsg);
+                    } else {
+                        res.send("No valid weather data found.");
+                    }
+                } catch (parseError) {
+                    console.log('Error parsing JSON:', parseError);
+                    res.send('Error parsing weather data.');
+                }
+            }
+        });
+    });
+
     app.get('/register', function (req, res) {
         res.render('register.ejs', shopData);
 
@@ -218,6 +257,8 @@ module.exports = function (app, shopData) {
             res.render("sale.ejs", newData)
         });
     });
+
+
     // This is an API
     const http = require('https');
     app.get('/checkPrice', function (req, res) {
