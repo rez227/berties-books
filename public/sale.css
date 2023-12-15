@@ -1,0 +1,54 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #d1c4e9;
+    /* Light purple background */
+    color: #673ab7;
+    /* Dark purple text color */
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.container {
+    max-width: 600px;
+    padding: 20px;
+    background-color: #fff;
+    /* White container background */
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1 {
+    color: #673ab7;
+    /* Dark purple heading color */
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+h2 {
+    color: #7e57c2;
+    /* Lighter purple heading color */
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background-color: #c5cae9;
+    /* Medium purple list item background */
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+li:hover {
+    background-color: #9fa8da;
+    /* Darker purple on hover */
+}

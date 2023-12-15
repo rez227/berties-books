@@ -259,7 +259,7 @@ module.exports = function (app, shopData) {
     });
 
 
-    // This is an API
+    // This is price converter from USD to GBP API
     const http = require('https');
     app.get('/checkPrice', function (req, res) {
         const options = {

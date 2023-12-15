@@ -1,24 +1,26 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 
 <head>
   <title>Welcome to <%=shopName%>
   </title>
-  <link rel="stylesheet" type="text/css" href="/main.css" />
+  <link rel="stylesheet" type="text/css" href="/sale.css" />
 </head>
 
 <body>
-  <h1>
-    <%=shopName%> Shop
-  </h1>
-  <h2>Here are our bargain categories:</h2>
-  <ul>
-    <% availablecategories.forEach(function(categories) { %>
-      <li>
-        <%= categories.occasion %>,<%= categories.colour %>, £<%=categories.budget%>
-      </li>
-      <% }) %>
-  </ul>
+  <div class="container">
+    <h1>
+      <%=shopName%> Shop
+    </h1>
+    <h2>HERE ARE THE ITEMS ON SALE:</h2>
+    <ul>
+      <% availablecategories.forEach(function(categories) { %>
+        <li>
+          <%= categories.occasion %>, <%= categories.colour %>, £<%=categories.budget%>
+        </li>
+        <% }) %>
+    </ul>
+  </div>
 </body>
 
 </html>

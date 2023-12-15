@@ -1,20 +1,22 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 
 <head>
     <title>Register for <%=shopName%>
     </title>
-    <link rel="stylesheet" type="text/css" href="main.css" />
+    <link rel="stylesheet" type="text/css" href="/login.css" />
 </head>
 
 <body>
-    <h1>Register for <%=shopName%>
-    </h1>
-    <form method="POST" action="/loggedin">
-        <p>username: <input id="username" type="username" name="username" value="username" /></p>
-        <p>password: <input id="password" type="password" name="password" value="password" /></p>
-        <input type="submit" value="Login" />
-    </form>
+    <div class="container">
+        <h1>LOG IN to <%=shopName%>
+        </h1>
+        <form method="POST" action="/loggedin">
+            <p>Username: <input id="username" type="text" name="username" /></p>
+            <p>Password: <input id="password" type="password" name="password" /></p>
+            <input type="submit" value="Login" />
+        </form>
+    </div>
 </body>
 
 </html>
